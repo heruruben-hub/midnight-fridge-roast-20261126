@@ -28,6 +28,12 @@ def main():
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         f.write(text)
+    # Round-trip check: what landed on disk must be exactly the line we
+    # validated, byte for byte, so a partial or mangled write never ships.
+    with open(OUTPUT_PATH, "r", encoding="utf-8") as f:
+        written = f.read()
+    if written != text:
+        raise ValueError("Round-trip check failed: entry.txt differs from the validated text")
     print(f"Wrote {len(text)} characters to {OUTPUT_PATH}")
 
 
